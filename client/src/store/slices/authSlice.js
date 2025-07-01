@@ -154,7 +154,7 @@ export const resetAuthSlice = () => (dispatch) => {
 export const register = (data) => async (dispatch) => {
   dispatch(authSlice.actions.registerRequest());
   await axios
-    .post("http://localhost:8000/api/v1/auth/register", data, {
+    .post("https://library-management-final-x5ae.onrender.com/api/v1/auth/register", data, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -172,7 +172,7 @@ export const otpVerification = (email, otp) => async (dispatch) => {
   dispatch(authSlice.actions.otpVerificationRequest());
   await axios
     .post(
-      "http://localhost:8000/api/v1/auth/verifyOTP",
+      "https://library-management-final-x5ae.onrender.com/api/v1/auth/verifyOTP",
       { email, otp },
       {
         withCredentials: true,
@@ -194,7 +194,7 @@ export const otpVerification = (email, otp) => async (dispatch) => {
 export const login = (data) => async (dispatch) => {
   dispatch(authSlice.actions.loginRequest());
   await axios
-    .post("http://localhost:8000/api/v1/auth/login", data, {
+    .post("https://library-management-final-x5ae.onrender.com/api/v1/auth/login", data, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -213,7 +213,7 @@ export const login = (data) => async (dispatch) => {
 export const logout = () => async (dispatch) => {
   dispatch(authSlice.actions.logoutRequest());
   await axios
-    .get("http://localhost:8000/api/v1/auth/logout", {
+    .get("https://library-management-final-x5ae.onrender.com/api/v1/auth/logout", {
       withCredentials: true,
     })
     .then((res) => {
@@ -230,7 +230,7 @@ export const logout = () => async (dispatch) => {
 export const getUser = () => async (dispatch) => {
   dispatch(authSlice.actions.getUserRequest());
   await axios
-    .get("http://localhost:8000/api/v1/auth/me", {
+    .get("https://library-management-final-x5ae.onrender.com/api/v1/auth/me", {
       withCredentials: true,
     })
     .then((res) => {
@@ -245,7 +245,7 @@ export const forgotPassword = (email) => async (dispatch) => {
   dispatch(authSlice.actions.forgotPasswordRequest());
   await axios
     .post(
-      "http://localhost:8000/api/v1/auth/password/forgot",
+      "https://library-management-final-x5ae.onrender.com/api/v1/auth/password/forgot",
       { email },
       {
         withCredentials: true,
@@ -267,7 +267,7 @@ export const forgotPassword = (email) => async (dispatch) => {
 export const resetPassword = (data, token) => async (dispatch) => {
   dispatch(authSlice.actions.resetPasswordRequest());
   await axios
-    .put(`http://localhost:8000/api/v1/auth/password/reset/${token}`, data, {
+    .put(`https://library-management-final-x5ae.onrender.com/api/v1/auth/password/reset/${token}`, data, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -288,7 +288,7 @@ export const updatePassword = (data) => async (dispatch) => {
     // console.log(Object.fromEntries(data.entries()));
 
     await axios
-      .put("http://localhost:8000/api/v1/auth/password/update", data, {
+      .put("https://library-management-final-x5ae.onrender.com/api/v1/auth/password/update", data, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",

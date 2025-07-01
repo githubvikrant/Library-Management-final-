@@ -24,7 +24,7 @@ export  default app;
 const _dirname = path.resolve();
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,  //frontend url
+    origin: "https://library-management-final-x5ae.onrender.com", 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
