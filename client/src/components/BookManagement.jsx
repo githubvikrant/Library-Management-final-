@@ -85,7 +85,6 @@ const BookManagement = () => {
       )
     : [];
 
-
   return (
     <>
       <main className="relative flex-1 p-6 pt-28">
@@ -155,7 +154,8 @@ const BookManagement = () => {
                     )}
                     <td className="px-4 py-2">{book.price}</td>
                     <td className="px-4 py-2">
-                      {book.availability ? "Available" : "Out of Stock"}
+                      
+                      {book.quantity>0 ? "Available" : "Out of Stock"}
                     </td>
                     {isAuthenticated && user?.role === "admin" && (
                       <td className="px-4 py-2 flex space-x-2 my-3 justify-center">
