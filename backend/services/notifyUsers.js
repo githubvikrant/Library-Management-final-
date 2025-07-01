@@ -26,7 +26,7 @@ export const notifyUsers = () =>{
 
                 element.notified = true;
                 await element.save();
-                console.log(`Email sent to ${element.user.email}`);
+                // console.log(`Email sent to ${element.user.email}`);
             }
         }
         } catch (error) {

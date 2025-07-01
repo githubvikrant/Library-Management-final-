@@ -84,7 +84,7 @@ export const returnBorrowedBooks = catchAsyncError(async (req, res, next) => {
   const { email } = req.body;
 
   const book = await Book.findById(bookId);
-  console.log(book);
+  // console.log(book);
   if (!book) {
     return next(new ErrorHandler("Book not found", 404));
   }

@@ -59,7 +59,7 @@ const Catalog = () => {
   const [email, setEmail] = useState("");
   const [borrowedBookId, setBorrowedBookId] = useState("");
   const openReturnBookPopup = (bookId, email) => {
-    console.log(bookId);
+    // console.log(bookId);
     setBorrowedBookId(bookId);
     setEmail(email);
     dispatch(toggleReturnBookPopup());

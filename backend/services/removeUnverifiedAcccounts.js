@@ -12,7 +12,7 @@ export const removeUnverifiedAccounts = () => {
         accountVerified: false,
         createdAt: { $lt: twentyMinutesAgo },
       });
-      console.log(`Deleted ${deletedUsers.deletedCount} unverified accounts.`);
+      // console.log(`Deleted ${deletedUsers.deletedCount} unverified accounts.`);
     } catch (error) {
       console.error("Error deleting unverified accounts:", error);
     }

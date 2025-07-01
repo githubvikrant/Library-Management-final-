@@ -9,7 +9,7 @@ const ReturnBookPopup = ({ bookId, email }) => {
 
   const handleReturnBook = (e) => {
     e.preventDefault();
-    console.log(email,bookId);
+    // console.log(email,bookId);
     dispatch(returnBook(email, bookId));
     dispatch(toggleReturnBookPopup());
   };
