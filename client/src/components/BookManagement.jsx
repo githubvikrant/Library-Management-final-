@@ -157,7 +157,7 @@ const BookManagement = () => {
                       
                       {book.quantity>0 ? "Available" : "Out of Stock"}
                     </td>
-                    {isAuthenticated && user?.role === "admin" && (
+                    {isAuthenticated && user?.role === "user" && (
                       <td className="px-4 py-2 flex space-x-2 my-3 justify-center">
                         <BookA onClick={() => openRecordBookPopup(book._id)}/>
                        <NotebookPen onClick={()=> openReadPopup(book._id)}/>
