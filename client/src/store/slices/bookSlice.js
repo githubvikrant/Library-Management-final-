@@ -109,7 +109,7 @@ export const restockBook = (id, quantity) => async (dispatch) => {
   dispatch(bookSlice.actions.restockBookRequest());
   await axios
     .patch(
-      `http://localhost:8000/api/v1/book/restock/${id}`,
+      `/api/v1/book/restock/${id}`,
       { quantity },
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     )
@@ -129,7 +129,7 @@ export const updateBook = (id, data) => async (dispatch) => {
   dispatch(bookSlice.actions.updateBookRequest());
   await axios
     .put(
-      `http://localhost:8000/api/v1/book/admin/update/${id}`,
+      `/api/v1/book/admin/update/${id}`,
       data,
       {
         withCredentials: true,

@@ -138,7 +138,7 @@ export const recordBorrowBook = (email, id) => async (dispatch) => {
   const body = email ? { email } : {};
   await axios
     .post(
-      `http://localhost:8000/api/v1/borrow/record-borrowed-book/${id}`,
+      `/api/v1/borrow/record-borrowed-book/${id}`,
       body,
       {
         withCredentials: true,
@@ -158,7 +158,7 @@ export const returnBook = (email, id) => async (dispatch) => {
   dispatch(borrowSlice.actions.returnBookRequest());
   await axios
     .put(
-      `http://localhost:8000/api/v1/borrow/return-borrowed-book/${id}`,
+      `/api/v1/borrow/return-borrowed-book/${id}`,
       { email },
       {
         withCredentials: true,
@@ -177,7 +177,7 @@ export const updateReturnDate = (borrowId, returnDate) => async (dispatch) => {
   dispatch(borrowSlice.actions.updateReturnDateRequest());
   await axios
     .patch(
-      `http://localhost:8000/api/v1/borrow/update-return-date/${borrowId}`,
+      `/api/v1/borrow/update-return-date/${borrowId}`,
       { returnDate },
       {
         withCredentials: true,
