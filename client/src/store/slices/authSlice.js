@@ -137,6 +137,21 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
+    updateProfileRequest(state) {
+      state.loading = true;
+      state.error = null;
+      state.message = null;
+    },
+    updateProfileSuccess(state, action) {
+      state.loading = false;
+      state.message = action.payload.message;
+      state.user = action.payload.user;
+    },
+    updateProfileFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     resetAuthSlice(state) {
       state.error = null;
       state.loading = false;
@@ -164,7 +179,7 @@ export const register = (data) => async (dispatch) => {
       dispatch(authSlice.actions.registerSuccess(res.data));
     })
     .catch((error) => {
-      dispatch(authSlice.actions.registerFailed(error.response.data.message));
+      dispatch(authSlice.actions.registerFailed(error.response?.data?.message || error.message || "Failed to register"));
     });
 };
 
@@ -306,5 +321,25 @@ export const updatePassword = (data) => async (dispatch) => {
       });
   };
 
+
+  export const updateProfile = (data) => async (dispatch) => {
+    dispatch(authSlice.actions.updateProfileRequest());
+    await axios
+      .put("http://localhost:8000/api/v1/auth/profile/update", data, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        dispatch(authSlice.actions.updateProfileSuccess(res.data));
+        dispatch(toggleSettingPopup());
+      })
+      .catch((error) => {
+        dispatch(
+          authSlice.actions.updateProfileFailed(error.response?.data?.message || error.message || "Failed to update profile")
+        );
+      });
+  };
 
   export default authSlice.reducer;

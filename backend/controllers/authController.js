@@ -7,6 +7,7 @@ import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { generateForgotPasswordEmailTemplate } from "../utils/emailTemplate.js";
 import crypto from "crypto";
+import { v2 as cloudinary } from "cloudinary";
 
 
 
@@ -241,5 +242,56 @@ export const updatepassword = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "Password updated successfully",
   });
-}
-);
+});
+
+export const updateProfile = catchAsyncError(async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+  };
+
+  if (req.files && req.files.avatar) {
+    const avatar = req.files.avatar;
+    const allowedFormats = ["image/png", "image/jpeg", "image/webp", "image/jpg"];
+    if (!allowedFormats.includes(avatar.mimetype)) {
+      return next(new ErrorHandler("File format is not supported.", 400));
+    }
+
+    const user = await User.findById(req.user._id);
+
+    // Optionally delete old avatar from cloudinary
+    if (user.avatar && user.avatar.public_id) {
+      try {
+        await cloudinary.uploader.destroy(user.avatar.public_id);
+      } catch (error) {
+        console.error("Cloudinary destroy error", error);
+      }
+    }
+
+    const cloudinaryResponse = await cloudinary.uploader.upload(
+      avatar.tempFilePath,
+      {
+        folder: "LIBRARY_MANAGEMENT_USER_AVATARS",
+      }
+    );
+
+    if (!cloudinaryResponse || cloudinaryResponse.error) {
+      return next(new ErrorHandler("Failed to upload avatar image to cloudinary", 500));
+    }
+
+    newUserData.avatar = {
+      public_id: cloudinaryResponse.public_id,
+      url: cloudinaryResponse.secure_url,
+    };
+  }
+
+  const user = await User.findByIdAndUpdate(req.user._id, newUserData, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+    user,
+  });
+});

@@ -34,8 +34,11 @@ const Header = () => {
       {/* Left side: Avatar and User Info */}
       <div className="flex items-center gap-4">
          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center border-2 border-gray-300 overflow-hidden">
-           {/* If user has an avatar URL, use it, else use default icon */}
-           <img src={userIcon} alt="user icon" className="w-8 h-8 object-contain opacity-70" />
+           {user?.avatar?.url ? (
+             <img src={user.avatar.url} alt="user avatar" className="w-full h-full object-cover" />
+           ) : (
+             <img src={userIcon} alt="default user icon" className="w-8 h-8 object-contain opacity-70" />
+           )}
          </div>
          <div className="flex flex-col justify-center">
            <span className="text-base font-bold text-gray-900 leading-tight tracking-tight">

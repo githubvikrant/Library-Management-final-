@@ -62,25 +62,22 @@ const UserDashboard = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const isDemoMode = !userBorrowedBooks || userBorrowedBooks.length === 0;
-    if (isDemoMode) {
-      setTotalBorrowedBooks(12);
-      setTotalReturnedBooks(8);
-    } else {
+    if (userBorrowedBooks) {
       setTotalBorrowedBooks(
         userBorrowedBooks.filter((book) => !book.returnedAt).length
       );
       setTotalReturnedBooks(
         userBorrowedBooks.filter((book) => !!book.returnedAt).length
       );
+    } else {
+      setTotalBorrowedBooks(0);
+      setTotalReturnedBooks(0);
     }
   }, [userBorrowedBooks]);
 
   // --- FINANCIAL CALCULATIONS ---
-  const isDemoMode = !userBorrowedBooks || userBorrowedBooks.length === 0;
-
-  const currentBooks = isDemoMode ? [] : (userBorrowedBooks?.filter((b) => !b.returnedAt) || []);
-  const returnedBooksArr = isDemoMode ? [] : (userBorrowedBooks?.filter((b) => !!b.returnedAt) || []);
+  const currentBooks = userBorrowedBooks?.filter((b) => !b.returnedAt) || [];
+  const returnedBooksArr = userBorrowedBooks?.filter((b) => !!b.returnedAt) || [];
 
   const totalDueNow = currentBooks.reduce((acc, b) => {
     const price = b.price || b.bookId?.price || 0;
@@ -165,7 +162,7 @@ const UserDashboard = () => {
                 </div>
                 <span className="text-sm font-semibold text-gray-600">Total Due Now</span>
               </div>
-              <p className="text-3xl font-bold text-gray-900">₹{isDemoMode ? 240 : totalDueNow}</p>
+              <p className="text-3xl font-bold text-gray-900">₹{totalDueNow}</p>
               <p className="text-xs text-gray-400 mt-1">for all currently borrowed books</p>
             </div>
 
@@ -176,12 +173,12 @@ const UserDashboard = () => {
                 </div>
                 <span className="text-sm font-semibold text-gray-600">Total Spent</span>
               </div>
-              <p className="text-3xl font-bold text-gray-900">₹{isDemoMode ? 380 : totalSpent}</p>
+              <p className="text-3xl font-bold text-gray-900">₹{totalSpent}</p>
               <p className="text-xs text-gray-400 mt-1">across all returned books</p>
             </div>
 
             <div className={`rounded-2xl p-5 shadow-sm border ${
-              (!isDemoMode && totalOverdueFine > 0)
+              (totalOverdueFine > 0)
                 ? "bg-red-50 border-red-200"
                 : "bg-white border-gray-200"
             }`}>
@@ -192,12 +189,12 @@ const UserDashboard = () => {
                 <span className="text-sm font-semibold text-gray-600">Overdue Fine</span>
               </div>
               <p className={`text-3xl font-bold ${
-                (!isDemoMode && totalOverdueFine > 0) ? "text-red-600" : "text-gray-900"
+                (totalOverdueFine > 0) ? "text-red-600" : "text-gray-900"
               }`}>
-                ₹{isDemoMode ? 0 : totalOverdueFine}
+                ₹{totalOverdueFine}
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                {(!isDemoMode && totalOverdueFine > 0)
+                {(totalOverdueFine > 0)
                   ? `₹${FINE_PER_DAY}/day fine — return soon!`
                   : "No fines accrued"}
               </p>
