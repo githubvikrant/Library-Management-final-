@@ -6,17 +6,24 @@ import { toast } from "react-toastify";
 import { resetPassword, resetAuthSlice } from "../store/slices/authSlice.js";
 
 
+/**
+ * ResetPassword Component
+ * Allows users to set a new password using a token received via email.
+ */
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { token } = useParams();
+  const { token } = useParams(); // Extract reset token from URL
 
   const dispatch = useDispatch();
   const { loading, error, message, isAuthenticated } = useSelector(
     (state) => state.auth
   );
 
+  /**
+   * Submit new passwords along with the token.
+   */
   const handleResetPassword = (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -67,15 +74,23 @@ const ResetPassword = () => {
               onSubmit={handleResetPassword}
               className="flex flex-col gap-4"
             >
+              {/* Password Input */}
               <input
                 type="password"
+                name="password"
+                autoComplete="new-password"
+                required
                 placeholder="Password"
                  value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-black"
               />
+              {/* Confirm Password Input */}
               <input
                 type="password"
+                name="confirmPassword"
+                autoComplete="new-password"
+                required
                 placeholder="confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

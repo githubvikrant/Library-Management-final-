@@ -6,14 +6,21 @@ import { toast } from "react-toastify";
 import { forgotPassword, resetAuthSlice } from "../store/slices/authSlice.js";
 
 
+/**
+ * ForgotPassword Component
+ * Allows users to request a password reset email by providing their email address.
+ */
 const ForgotPassword = () => {
 
    const [email, setEmail] = useState("");
-
    const dispatch = useDispatch();
 
+   // Redux state for loading and response messages
    const {loading , error ,message , isAuthenticated} = useSelector((state) => state.auth);
    
+    /**
+     * Dispatch the forgotPassword thunk when the form is submitted.
+     */
     const handleForgotPassword = (e) => {
         e.preventDefault();
         dispatch(forgotPassword(email));
@@ -62,6 +69,9 @@ const ForgotPassword = () => {
             >
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
+                required
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

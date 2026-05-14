@@ -18,7 +18,7 @@ export const notifyUsers = () =>{
 
         for( const element of borrowers){
             if(element.user && element.user.email){
-                sendEmail({
+                await sendEmail({
                     email:element.user.email,
                     subject: "Book Return Remainder.",
                     message: `Hello ${element.user.name},\n\nThis is a remainder that the you borrowed is due for return today.Please return the book as soon as possible.\n\n Thank you. `

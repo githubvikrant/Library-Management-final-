@@ -6,14 +6,23 @@ import { otpVerification, resetAuthSlice } from "../store/slices/authSlice.js";
 
 import logo from "../assets/black-logo.png";
 
+/**
+ * OTP Verification Component
+ * Handles the submission of the One-Time Password sent to the user's email during registration.
+ */
 const OTP = () => {
-  const { email } = useParams();
+  const { email } = useParams(); // Extract email from URL params
   const [otp, setOtp] = useState("");
   const dispatch = useDispatch();
+  
+  // Destructure state from auth slice
   const { loading, error, message, isAuthenticated } = useSelector(
     (state) => state.auth
   );
 
+  /**
+   * Submit OTP and Email for verification.
+   */
   const handleOtpVerification = (e) => {
     e.preventDefault();
     dispatch(otpVerification(email, otp));
@@ -60,8 +69,12 @@ const OTP = () => {
               onSubmit={handleOtpVerification}
               className="flex flex-col gap-4"
             >
+              {/* OTP Input */}
               <input
                 type="text"
+                name="otp"
+                required
+                autoComplete="one-time-code"
                 placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}

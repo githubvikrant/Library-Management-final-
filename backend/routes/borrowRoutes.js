@@ -5,6 +5,7 @@ import {
   getBorrowedBooksForAdmin,
   recordBorrowedBook,
   returnBorrowedBooks,
+  updateReturnDate,
  
 } from "../controllers/borrowController.js";
 import {
@@ -14,9 +15,10 @@ import {
 
 const router = express.Router();
 
-router.post("/record-borrowed-book/:id", isAuthenticated, isAuthorized("user"),recordBorrowedBook);
+router.post("/record-borrowed-book/:id", isAuthenticated, isAuthorized("user", "admin"),recordBorrowedBook);
 router.get("/borrowed-books-by-all-users", isAuthenticated, isAuthorized("admin"),getBorrowedBooksForAdmin);
 router.get("/my-borrowed-books", isAuthenticated, borrowedBooks);
-router.put("/return-borrowed-book/:bookId",isAuthenticated,isAuthorized("user"),returnBorrowedBooks);  
+router.put("/return-borrowed-book/:bookId",isAuthenticated,isAuthorized("user", "admin"),returnBorrowedBooks);
+router.patch("/update-return-date/:borrowId", isAuthenticated, isAuthorized("admin"), updateReturnDate);
 
-export default router;
+export default router;

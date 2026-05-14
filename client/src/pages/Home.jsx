@@ -1,83 +1,54 @@
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import SideBar from "../layout/SideBar";
+import Header from "../layout/Header";
 import { useState } from "react";
-import UserDashboard from "../components/UserDashboard";
-import AdminDashboard from "../components/AdminDashboard";
-import BookManagement from "../components/BookManagement";
-import Catalog from "../components/Catalog";
-import MyBorrowedBooks from "../components/MyBorrowedBooks";
-import Users from "../components/Users";
 import AddNewAdmin from "../popups/AddNewAdmin";
 
+/**
+ * Home Layout Component
+ * Serves as the main layout wrapper for authenticated users, providing the Sidebar
+ * and a content area (<Outlet />) for nested routes.
+ */
 const Home = () => {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
-  const [selectedComponent, setSelectedComponent] = useState("");
+  // Destructure auth state
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-
+  // Redirect to register if not authenticated
   if (!isAuthenticated) {
     return <Navigate to={"/register"} />;
   }
 
   return (
     <>
-      <div className="relative md:pl-64 flex min-h-screen bg-gray-100">
-        <div className="md:hidden z-10 absolute right-6 top-4 sm:top-6 flex justify-center items-center bg-black rounded-md h-9 w-9 text-white">
+      <div className="flex h-screen bg-gray-100 w-full overflow-hidden">
+        {/* Mobile Hamburger Menu */}
+        <div className="md:hidden z-20 absolute right-6 top-4 sm:top-6 flex justify-center items-center bg-black rounded-md h-9 w-9 text-white cursor-pointer hover:bg-gray-800 transition">
           <GiHamburgerMenu
             className="text-2xl"
             onClick={() => setIsSideBarOpen(!isSideBarOpen)}
           />
         </div>
+
+        {/* Navigation Sidebar */}
         <SideBar
           isSideBarOpen={isSideBarOpen}
           setIsSideBarOpen={setIsSideBarOpen}
-          setSelectedComponent={setSelectedComponent}
         />
-        {(() => {
-          switch (selectedComponent) {
-            case "Dashboard":
-              return user?.role === "user" ? (
-                <UserDashboard />
-              ) : (
-                <AdminDashboard />
-              );
-             
 
-            case "Books":
-              return <BookManagement />;
-             
+        {/* Main Content Column */}
+        <div className="flex-1 flex flex-col h-screen overflow-hidden w-full bg-gray-50">
+          <Header />
+          
+          {/* Scrollable Page Content */}
+          <div className="flex-1 overflow-y-auto relative w-full">
+            <Outlet />
+          </div>
+        </div>
 
-            case "Catalog":
-              if (user?.role === "admin") {
-                return <Catalog />;
-              }
-              break;
-
-            case "Users":
-              if (user?.role === "admin") {
-                return <Users />;
-              }
-              break;
-
-            case "My_Borrowed_Books":
-              return <MyBorrowedBooks />;
-
-            case "Add_new_Admin":
-                return <AddNewAdmin/>
-             
-
-            default:
-              return user?.role === "user" ? (
-                <UserDashboard />
-              ) : (
-                <AdminDashboard />
-              );
-             
-          }
-        })()}
       </div>
     </>
   );

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { toggleRecordBookPopup } from "./popUpSlice";
+import { toggleRecordBookPopup, toggleReturnBookPopup } from "./popUpSlice";
 
 const borrowSlice = createSlice({
   name: "borrow",
@@ -71,6 +71,22 @@ const borrowSlice = createSlice({
       state.message = null;
     },
 
+    updateReturnDateRequest(state) {
+      state.loading = true;
+      state.error = null;
+      state.message = null;
+    },
+    updateReturnDateSuccess(state, action) {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    updateReturnDateFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+      state.message = null;
+    },
+
+    // Sync reset — no async wrapper so message is cleared predictably
     resetBorrowSlice(state) {
       state.loading = false;
       state.error = null;
@@ -82,7 +98,7 @@ const borrowSlice = createSlice({
 export const fetchUserBorrowedBooks = () => async (dispatch) => {
   dispatch(borrowSlice.actions.fetchUserBorrowedBooksRequest());
   await axios
-    .get("https://library-management-final-x5ae.onrender.com/api/v1/borrow/my-borrowed-books", {
+    .get("http://localhost:8000/api/v1/borrow/my-borrowed-books", {
       withCredentials: true,
     })
     .then((res) => {
@@ -102,7 +118,7 @@ export const fetchUserBorrowedBooks = () => async (dispatch) => {
 export const fetchAllBorrowedBooks = () => async (dispatch) => {
   dispatch(borrowSlice.actions.fetchAllBorrowedBooksRequest());
   await axios
-    .get("https://library-management-final-x5ae.onrender.com/api/v1/borrow/borrowed-books-by-all-users", {
+    .get("http://localhost:8000/api/v1/borrow/borrowed-books-by-all-users", {
       withCredentials: true,
     })
     .then((res) => {
@@ -119,15 +135,14 @@ export const fetchAllBorrowedBooks = () => async (dispatch) => {
 
 export const recordBorrowBook = (email, id) => async (dispatch) => {
   dispatch(borrowSlice.actions.recordBookRequest());
+  const body = email ? { email } : {};
   await axios
     .post(
-      `https://library-management-final-x5ae.onrender.com/api/v1/borrow/record-borrowed-book/${id}`,
-      { email },
+      `http://localhost:8000/api/v1/borrow/record-borrowed-book/${id}`,
+      body,
       {
         withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     )
     .then((res) => {
@@ -135,27 +150,52 @@ export const recordBorrowBook = (email, id) => async (dispatch) => {
       dispatch(toggleRecordBookPopup());
     })
     .catch((err) => {
-      
-
-      dispatch(borrowSlice.actions.recordBookFailed(err.response.data.message));
+      dispatch(borrowSlice.actions.recordBookFailed(err.response?.data?.message || "Failed to borrow book"));
     });
 };
 
-export const returnBook = (email,id) => async (dispatch) => {
+export const returnBook = (email, id) => async (dispatch) => {
   dispatch(borrowSlice.actions.returnBookRequest());
-  await axios.put(`https://library-management-final-x5ae.onrender.com/api/v1/borrow/return-borrowed-book/${id}`,{email},{withCredentials:true,
-    headers: {
-      "Content-Type":"application/json",
-    },
-  }).then((res) => {
-    dispatch(borrowSlice.actions.returnBookSuccess(res.data.message));
-  })
-  .catch((err) => {
-    dispatch(borrowSlice.actions.returnBookFailed(err.response.data.message));
-  });
+  await axios
+    .put(
+      `http://localhost:8000/api/v1/borrow/return-borrowed-book/${id}`,
+      { email },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+    .then((res) => {
+      dispatch(borrowSlice.actions.returnBookSuccess(res.data.message));
+    })
+    .catch((err) => {
+      dispatch(borrowSlice.actions.returnBookFailed(err.response?.data?.message || "Failed to return book"));
+    });
 };
 
-export const resetBorrowSlice = () => async (dispatch) => {
+export const updateReturnDate = (borrowId, returnDate) => async (dispatch) => {
+  dispatch(borrowSlice.actions.updateReturnDateRequest());
+  await axios
+    .patch(
+      `http://localhost:8000/api/v1/borrow/update-return-date/${borrowId}`,
+      { returnDate },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+    .then((res) => {
+      dispatch(borrowSlice.actions.updateReturnDateSuccess(res.data.message));
+    })
+    .catch((err) => {
+      dispatch(borrowSlice.actions.updateReturnDateFailed(err.response?.data?.message || "Failed to update return date"));
+    });
+};
+
+// Sync export — dispatch directly, no async wrapper
+export const resetBorrowSlice = () => (dispatch) => {
   dispatch(borrowSlice.actions.resetBorrowSlice());
 };
+
 export default borrowSlice.reducer;
+

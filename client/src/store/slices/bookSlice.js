@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import {toggleAddBookPopup} from "../slices/popUpSlice";
+import { toggleAddBookPopup } from "../slices/popUpSlice";
 
 const bookSlice = createSlice({
   name: "book",
@@ -31,11 +31,37 @@ const bookSlice = createSlice({
       state.message = null;
     },
     addBookSuccess(state, action) {
-      state.loading = true;
+      state.loading = false;
       state.message = action.payload;
     },
     addBookFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    restockBookRequest(state) {
       state.loading = true;
+      state.error = null;
+      state.message = null;
+    },
+    restockBookSuccess(state, action) {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    restockBookFailed(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    updateBookRequest(state) {
+      state.loading = true;
+      state.error = null;
+      state.message = null;
+    },
+    updateBookSuccess(state, action) {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    updateBookFailed(state, action) {
+      state.loading = false;
       state.error = action.payload;
     },
     resetBookSlice(state) {
@@ -50,10 +76,10 @@ const bookSlice = createSlice({
 export const fetchAllBooks = () => async (dispatch) => {
   dispatch(bookSlice.actions.fetchBooksRequest());
   await axios
-    .get("https://library-management-final-x5ae.onrender.com/api/v1/book/all", { withCredentials: true })
+    .get("http://localhost:8000/api/v1/book/all", { withCredentials: true })
     .then((res) => {
       dispatch(bookSlice.actions.fetchBooksSuccess(res.data.books));
-      
+
     })
     .catch((err) => {
       dispatch(bookSlice.actions.fetchBooksFailed(err.response.data.message));
@@ -63,7 +89,7 @@ export const fetchAllBooks = () => async (dispatch) => {
 export const addBook = (data) => async (dispatch) => {
   dispatch(bookSlice.actions.addBookRequest());
   await axios
-    .post("https://library-management-final-x5ae.onrender.com/api/v1/book/admin/add", data, {
+    .post("http://localhost:8000/api/v1/book/admin/add", data, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -78,8 +104,44 @@ export const addBook = (data) => async (dispatch) => {
     });
 };
 
+// Add more copies (quantity) to an existing book — admin only
+export const restockBook = (id, quantity) => async (dispatch) => {
+  dispatch(bookSlice.actions.restockBookRequest());
+  await axios
+    .patch(
+      `http://localhost:8000/api/v1/book/restock/${id}`,
+      { quantity },
+      { withCredentials: true, headers: { "Content-Type": "application/json" } }
+    )
+    .then((res) => {
+      dispatch(bookSlice.actions.restockBookSuccess(res.data.message));
+    })
+    .catch((err) => {
+      dispatch(bookSlice.actions.restockBookFailed(err.response?.data?.message || "Failed to restock"));
+    });
+};
+
 export const resetBookSlice = () => (dispatch) => {
   dispatch(bookSlice.actions.resetBookSlice());
 }
+
+export const updateBook = (id, data) => async (dispatch) => {
+  dispatch(bookSlice.actions.updateBookRequest());
+  await axios
+    .put(
+      `http://localhost:8000/api/v1/book/admin/update/${id}`,
+      data,
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+    .then((res) => {
+      dispatch(bookSlice.actions.updateBookSuccess(res.data.message));
+    })
+    .catch((err) => {
+      dispatch(bookSlice.actions.updateBookFailed(err.response?.data?.message || "Failed to update book"));
+    });
+};
 
 export default bookSlice.reducer;

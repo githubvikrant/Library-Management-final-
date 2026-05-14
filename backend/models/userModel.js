@@ -34,7 +34,7 @@ const userschema = new mongoose.Schema(
       {
         bookId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Borrow",
+          ref: "Book",
         },
         bookTitle: {
           type: String,

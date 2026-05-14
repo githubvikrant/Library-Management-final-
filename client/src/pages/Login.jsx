@@ -4,13 +4,23 @@ import { Link, Navigate } from "react-router-dom";
 import logo from "../assets/black-logo.png";
 import { toast } from "react-toastify";
 import { login, resetAuthSlice } from "../store/slices/authSlice.js";
+/**
+ * Login Component
+ * Handles user authentication by dispatching the login action to the Redux store.
+ */
 const Login = () => {
+   // Local state for form inputs
    const [email,setEmail] = React.useState("");
    const [password,setPassword] = React.useState("");
    const dispatch = useDispatch();
 
+   // Extract authentication state from Redux store
    const {loading , error ,message , isAuthenticated} = useSelector((state) => state.auth);
 
+   /**
+    * Handles form submission.
+    * Uses FormData to prepare the payload for the backend API.
+    */
    const handleLogin = (e)=> {
     e.preventDefault();
     const data = new FormData();
@@ -18,10 +28,13 @@ const Login = () => {
     data.append("password", password);
     dispatch(login(data));
    }
+   
+    // React useEffect hook to handle side effects (like showing toast notifications)
+    // Runs whenever `message` or `error` changes in the Redux state.
     useEffect(() => {
       if(message){
         toast.success(message);
-        dispatch(resetAuthSlice());
+        dispatch(resetAuthSlice()); // Reset state to prevent duplicate toasts
       }
       if (error) {
         toast.error(error);
@@ -55,19 +68,27 @@ const Login = () => {
               onSubmit={handleLogin}
               className="flex flex-col gap-4"
             >
+              {/* Email Input */}
               <input
                 type="email"
+                name="email"
+                autoComplete="username"
                 placeholder="Enter Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-black"
+                required
               />
+              {/* Password Input */}
               <input
                 type="password"
+                name="password"
+                autoComplete="current-password"
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-black"
+                required
               />
               <Link to={"/password/forgot"} className="font-semibold rounded-md text-black ">Forgot Password ?</Link>
               <Link to={"/register"} className="font-semibold rounded-md text-black mb-6">New User ? Create account</Link>

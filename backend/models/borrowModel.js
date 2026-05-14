@@ -23,7 +23,7 @@ const borrowSchema = new mongoose.Schema({
     }, 
     bookId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Borrow",
+        ref: "Book",
         required: true
     },
     quantity: {

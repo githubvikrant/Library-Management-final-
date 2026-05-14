@@ -6,25 +6,37 @@ import logo_with_title from "../assets/logo-with-title.png";
 import { useDispatch, useSelector } from "react-redux";
 import { resetAuthSlice, register } from "../store/slices/authSlice.js";
 import { useNavigate, Link, Navigate } from "react-router-dom";
+/**
+ * Register Component
+ * Handles new user registration. Upon successful registration, it redirects
+ * the user to the OTP verification page.
+ */
 const Register = () => {
+  // Local state for user inputs
   const [name,setName] = useState("");
   const [email,setEmail] = useState("");
   const [password,setPassword] = useState("");
 
   const dispatch = useDispatch();
 
+  // Extract authentication state from Redux store
   const {loading , error, message, isAuthenticated} = useSelector((state) => state.auth);
 
   const navigateTo = useNavigate();
   
+  /**
+   * Handles the registration form submission.
+   */
   const handleRegister = (e)=> {
     e.preventDefault();
     const data = new FormData();
     data.append("name",name);
     data.append("email",email);
     data.append("password",password);
-    dispatch(register(data));
+    dispatch(register(data)); // Dispatch register thunk
   };
+
+  // useEffect to listen for registration success/error messages
   useEffect(()=> {
     if(message){
       navigateTo(`/verifyOTP/${email}`);
@@ -65,18 +77,23 @@ const Register = () => {
       </div>
       <p className="text-gray-800 text-center mb-12">Please provide information to sign up</p>
       <form onSubmit={handleRegister} className="flex flex-col gap-4">
+        {/* Name Input */}
         <div className="mb-2">
-          <input type="text" value={name} onChange={(e)=>setName(e.target.value)} placeholder="Full Name" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
+          <input type="text" name="name" autoComplete="name" required value={name} onChange={(e)=>setName(e.target.value)} placeholder="Full Name" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
         </div>
 
+        {/* Email Input */}
         <div className="mb-2">
-          <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Email" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
+          <input type="email" name="email" autoComplete="username" required value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Email" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
         </div>
 
+        {/* Password Input */}
         <div className="mb-2">
-          <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
+          <input type="password" name="password" autoComplete="new-password" required value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
         </div>
-        <button type="submit" className="border-2 mt-5 border-black w-full font-semibold bg-black text-white py-2 rounded-lg hover:bg-white hover:text-black transition">SIGN UP</button>
+        <button type="submit" disabled={loading} className="border-2 mt-5 border-black w-full font-semibold bg-black text-white py-2 rounded-lg hover:bg-white hover:text-black transition disabled:opacity-50">
+          {loading ? "SIGNING UP..." : "SIGN UP"}
+        </button>
       </form>
 
     </div>
