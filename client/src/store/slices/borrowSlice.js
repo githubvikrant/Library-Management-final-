@@ -98,7 +98,7 @@ const borrowSlice = createSlice({
 export const fetchUserBorrowedBooks = () => async (dispatch) => {
   dispatch(borrowSlice.actions.fetchUserBorrowedBooksRequest());
   await axios
-    .get("http://localhost:8000/api/v1/borrow/my-borrowed-books", {
+    .get("/api/v1/borrow/my-borrowed-books", {
       withCredentials: true,
     })
     .then((res) => {
@@ -118,7 +118,7 @@ export const fetchUserBorrowedBooks = () => async (dispatch) => {
 export const fetchAllBorrowedBooks = () => async (dispatch) => {
   dispatch(borrowSlice.actions.fetchAllBorrowedBooksRequest());
   await axios
-    .get("http://localhost:8000/api/v1/borrow/borrowed-books-by-all-users", {
+    .get("/api/v1/borrow/borrowed-books-by-all-users", {
       withCredentials: true,
     })
     .then((res) => {
