@@ -1,5 +1,5 @@
 import express from 'express';
-import { Register,login,logout, forgotPassword ,resetPassword,updatepassword, updateProfile} from '../controllers/authController.js';
+import { Register, login, googleAuth, logout, forgotPassword, resetPassword, updatepassword, updateProfile } from '../controllers/authController.js';
 import { isAuthenticated } from '../middlewares/authMiddleware.js';
 import { getUser } from '../controllers/authController.js';
 
@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/register', Register);
 router.post('/login', login);
+router.post('/google', googleAuth);
 router.get('/logout',isAuthenticated,logout);
 router.get('/me',isAuthenticated,getUser);
 router.post("/password/forgot",forgotPassword);

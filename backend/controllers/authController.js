@@ -7,6 +7,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 import { generateForgotPasswordEmailTemplate } from "../utils/emailTemplate.js";
 import crypto from "crypto";
 import { v2 as cloudinary } from "cloudinary";
+import jwt from "jsonwebtoken";
 
 export const Register = catchAsyncError(async (req, res, next) => {
   try {
@@ -56,6 +57,78 @@ export const login = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Invalid email or password", 401));
   }
   sendToken(user, 200, "User login successful", res);
+});
+
+export const googleAuth = catchAsyncError(async (req, res, next) => {
+  const { credential, email: directEmail, name: directName, picture: directPicture, googleId: directGoogleId } = req.body;
+
+  let email = directEmail;
+  let name = directName;
+  let picture = directPicture;
+  let googleId = directGoogleId;
+
+  if (credential) {
+    try {
+      const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
+      if (response.ok) {
+        const payload = await response.json();
+        email = payload.email;
+        name = payload.name;
+        picture = payload.picture;
+        googleId = payload.sub;
+      } else {
+        const decoded = jwt.decode(credential);
+        if (decoded && decoded.email) {
+          email = decoded.email;
+          name = decoded.name;
+          picture = decoded.picture;
+          googleId = decoded.sub;
+        }
+      }
+    } catch (err) {
+      const decoded = jwt.decode(credential);
+      if (decoded && decoded.email) {
+        email = decoded.email;
+        name = decoded.name;
+        picture = decoded.picture;
+        googleId = decoded.sub;
+      }
+    }
+  }
+
+  if (!email) {
+    return next(new ErrorHandler("Google authentication failed. No email provided.", 400));
+  }
+
+  email = email.toLowerCase().trim();
+
+  let user = await User.findOne({ email });
+
+  if (user) {
+    let isModified = false;
+    if (!user.googleId && googleId) {
+      user.googleId = googleId;
+      isModified = true;
+    }
+    if ((!user.avatar || !user.avatar.url) && picture) {
+      user.avatar = { url: picture };
+      isModified = true;
+    }
+    if (isModified) {
+      await user.save({ validateBeforeSave: false });
+    }
+    sendToken(user, 200, "Signed in with Google successfully", res);
+  } else {
+    user = await User.create({
+      name: name || email.split("@")[0],
+      email,
+      googleId: googleId || null,
+      authProvider: "google",
+      avatar: picture ? { url: picture } : undefined,
+      accountVerified: true,
+    });
+    sendToken(user, 201, "Account created & signed in with Google successfully", res);
+  }
 });
 
 export const logout = catchAsyncError(async (req, res, next) => {

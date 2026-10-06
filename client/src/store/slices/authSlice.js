@@ -188,6 +188,27 @@ export const login = (data) => async (dispatch) => {
     });
 };
 
+export const googleLogin = (payload) => async (dispatch) => {
+  dispatch(authSlice.actions.loginRequest());
+  await axios
+    .post("/api/v1/auth/google", payload, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((res) => {
+      dispatch(authSlice.actions.loginSuccess(res.data));
+    })
+    .catch((error) => {
+      dispatch(
+        authSlice.actions.loginFailed(
+          error.response?.data?.message || error.message || "Google Sign-In failed"
+        )
+      );
+    });
+};
+
 export const logout = () => async (dispatch) => {
   dispatch(authSlice.actions.logoutRequest());
   await axios

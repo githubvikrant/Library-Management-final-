@@ -6,6 +6,7 @@ import logo_with_title from "../assets/logo-with-title.png";
 import { useDispatch, useSelector } from "react-redux";
 import { resetAuthSlice, register } from "../store/slices/authSlice.js";
 import { useNavigate, Link, Navigate } from "react-router-dom";
+import GoogleAuthButton from "../components/GoogleAuthButton.jsx";
 /**
  * Register Component
  * Handles new user registration. Upon successful registration, the user
@@ -63,33 +64,46 @@ const Register = () => {
       </div>
     </div>
     {/* right side */}
-    <div className="w-full md:w-1/2 flex items-center justify-center bg-white  p-8">
-    <div className="w-full max-w-sm">
-      <div className="flex justify-center mb-12">
-        <div className="flex flex-col-reverse sm:flex-row items-center justify-center gap-5">
-          <h3 className="font-medium text-4xl overflow-hidden">Sign up</h3>
-          <img src={logo} alt="logo" className="h-auto w-24 object-cover"/>
+    <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-8">
+      <div className="w-full max-w-sm">
+        <div className="flex justify-center mb-6">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-center gap-3">
+            <h3 className="font-semibold text-3xl overflow-hidden">Sign up</h3>
+            <img src={logo} alt="logo" className="h-auto w-16 object-cover"/>
+          </div>
         </div>
+        <p className="text-gray-600 text-center mb-6 text-sm">Sign up with 1-click Google or enter your details</p>
+
+      {/* Google One-Click Signup */}
+      <GoogleAuthButton text="signup_with" />
+
+      <div className="flex items-center my-4">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="px-3 text-gray-500 text-xs uppercase font-medium">Or continue with password</span>
+        <div className="flex-grow border-t border-gray-300"></div>
       </div>
-      <p className="text-gray-800 text-center mb-12">Please provide information to sign up</p>
-      <form onSubmit={handleRegister} className="flex flex-col gap-4">
+
+      <form onSubmit={handleRegister} className="flex flex-col gap-3">
         {/* Name Input */}
-        <div className="mb-2">
-          <input type="text" name="name" autoComplete="name" required value={name} onChange={(e)=>setName(e.target.value)} placeholder="Full Name" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
+        <div>
+          <input type="text" name="name" autoComplete="name" required value={name} onChange={(e)=>setName(e.target.value)} placeholder="Full Name" className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:border-black"/>
         </div>
 
         {/* Email Input */}
-        <div className="mb-2">
-          <input type="email" name="email" autoComplete="username" required value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Email" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
+        <div>
+          <input type="email" name="email" autoComplete="username" required value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Email" className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:border-black"/>
         </div>
 
         {/* Password Input */}
-        <div className="mb-2">
-          <input type="password" name="password" autoComplete="new-password" required value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password" className="w-full px-4 py-3 border border-black rounded-md focus:outline-none"/>
+        <div>
+          <input type="password" name="password" autoComplete="new-password" required value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Password (min 6 characters)" className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:border-black"/>
         </div>
-        <button type="submit" disabled={loading} className="border-2 mt-5 border-black w-full font-semibold bg-black text-white py-2 rounded-lg hover:bg-white hover:text-black transition disabled:opacity-50">
-          {loading ? "SIGNING UP..." : "SIGN UP"}
+        <button type="submit" disabled={loading} className="border-2 mt-2 border-black w-full font-semibold bg-black text-white py-2.5 rounded-lg hover:bg-white hover:text-black transition duration-200 disabled:opacity-50">
+          {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
         </button>
+        <div className="text-center mt-3 md:hidden">
+          <p className="text-sm text-gray-600">Already have an account? <Link to="/login" className="font-semibold text-black underline">Sign In</Link></p>
+        </div>
       </form>
 
     </div>

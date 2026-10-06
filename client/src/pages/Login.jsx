@@ -4,6 +4,7 @@ import { Link, Navigate } from "react-router-dom";
 import logo from "../assets/black-logo.png";
 import { toast } from "react-toastify";
 import { login, resetAuthSlice } from "../store/slices/authSlice.js";
+import GoogleAuthButton from "../components/GoogleAuthButton.jsx";
 /**
  * Login Component
  * Handles user authentication by dispatching the login action to the Redux store.
@@ -51,20 +52,30 @@ const Login = () => {
         <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-8 relative">
           
           <div className="max-w-sm w-full">
-            <div className="flex justify-center mb-12">
-              <div className="rounded-full  flex items-center justify-center">
-                <img src={logo} alt="logo" className="h-24 w-auto" />
+            <div className="flex justify-center mb-6">
+              <div className="rounded-full flex items-center justify-center">
+                <img src={logo} alt="logo" className="h-20 w-auto" />
               </div>
             </div>
-            <h1 className="text-4xl font-medium text-center mb-12 overflow-hidden">
+            <h1 className="text-3xl font-semibold text-center mb-2 overflow-hidden">
              Welcome Back!
             </h1>
-            <p className="text-gray-800 text-center mb-12">
-              Please enter your credentials to Login
+            <p className="text-gray-600 text-center mb-6 text-sm">
+              Sign in with 1-click Google or enter your credentials
             </p>
+
+            {/* Google One-Click Sign In */}
+            <GoogleAuthButton text="signin_with" />
+
+            <div className="flex items-center my-4">
+              <div className="flex-grow border-t border-gray-300"></div>
+              <span className="px-3 text-gray-500 text-xs uppercase font-medium">Or continue with password</span>
+              <div className="flex-grow border-t border-gray-300"></div>
+            </div>
+
             <form
               onSubmit={handleLogin}
-              className="flex flex-col gap-4"
+              className="flex flex-col gap-3"
             >
               {/* Email Input */}
               <input
@@ -88,12 +99,15 @@ const Login = () => {
                 className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:border-black"
                 required
               />
-              <Link to={"/password/forgot"} className="font-semibold rounded-md text-black ">Forgot Password ?</Link>
-              <Link to={"/register"} className="font-semibold rounded-md text-black mb-6">New User ? Create account</Link>
+              <div className="flex justify-between items-center text-xs mt-1">
+                <Link to={"/password/forgot"} className="font-medium text-gray-600 hover:text-black">Forgot Password?</Link>
+                <Link to={"/register"} className="font-semibold text-black hover:underline">Create account</Link>
+              </div>
               <button
                 type="submit"
-                className="bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition duration-300 ease-in-out">
-               Login
+                disabled={loading}
+                className="bg-black text-white font-bold py-2.5 px-4 rounded-lg hover:bg-gray-800 transition duration-300 ease-in-out disabled:opacity-50 mt-2">
+               {loading ? "Logging in..." : "Login with Password"}
               </button>
             </form>
           </div>
