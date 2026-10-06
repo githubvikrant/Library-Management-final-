@@ -10,7 +10,6 @@ import bookRoutes from './routes/bookRoutes.js';
 import borrowRoutes from './routes/borrowRoutes.js';      
 import fileUpload from "express-fileupload";
 import { notifyUsers } from './services/notifyUsers.js';
-import { removeUnverifiedAccounts } from './services/removeUnverifiedAcccounts.js';
 import path from "path";
 import {v2 as cloudinary} from "cloudinary";
 
@@ -23,8 +22,23 @@ export  default app;
 
 const _dirname = path.resolve();
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://library-management-final-x5ae.onrender.com",
+  "http://localhost:5173",
+  "http://localhost:5000",
+  "http://localhost:8000"
+].filter(Boolean);
+
 app.use(cors({
-    origin: "https://library-management-final-x5ae.onrender.com", 
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl or same-origin static files)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, true); // Alternatively allow all or matched
+        }
+    }, 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
@@ -54,7 +68,6 @@ app.get('*',(_, res) => {
 });
 
 notifyUsers();
-removeUnverifiedAccounts();
 
 connectDB();
 

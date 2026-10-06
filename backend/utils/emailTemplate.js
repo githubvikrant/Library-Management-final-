@@ -1,16 +1,3 @@
-export function generateVerificationOtpEmailTemplate(otpCode){
- 
-   return `<div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-        <h2 style="color: #333333;">Email Verification Code</h2>
-        <p style="color: #555555;">Use the following One-Time Password (OTP) to verify your email address:</p>
-        <p style="font-size: 24px; font-weight: bold; color: #4CAF50; margin: 20px 0;">${otpCode}</p>
-        <p style="color: #555555;">This OTP is valid for 10 minutes. If you did not request this, please ignore this email.</p>
-        <p style="color: #777777; font-size: 12px;">&copy; 2024 Your Company. All rights reserved.</p>
-    </div>`
- 
-}
-
-
 export function generateForgotPasswordEmailTemplate(resetPasswordUrl) {
     return `
         <html>

@@ -3,7 +3,6 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
-import OTP from "./pages/OTP.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import {ToastContainer} from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
@@ -72,7 +71,6 @@ const App = () => {
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/password/forgot" element={<ForgotPassword/>}/>
-        <Route path="/verifyOTP/:email" element={<OTP/>}/>
         <Route path="/password/reset/:token" element={<ResetPassword/>}/>
       </Routes>
       <ToastContainer theme="dark" />

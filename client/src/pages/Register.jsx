@@ -8,8 +8,8 @@ import { resetAuthSlice, register } from "../store/slices/authSlice.js";
 import { useNavigate, Link, Navigate } from "react-router-dom";
 /**
  * Register Component
- * Handles new user registration. Upon successful registration, it redirects
- * the user to the OTP verification page.
+ * Handles new user registration. Upon successful registration, the user
+ * is authenticated and logged in directly.
  */
 const Register = () => {
   // Local state for user inputs
@@ -34,17 +34,16 @@ const Register = () => {
   };
 
   // useEffect to listen for registration success/error messages
-  useEffect(()=> {
-    if(message){
-      navigateTo(`/verifyOTP/${email}`);
+  useEffect(() => {
+    if (message) {
       toast.success(message);
       dispatch(resetAuthSlice());
     }
-    if(error){
+    if (error) {
       toast.error(error);
       dispatch(resetAuthSlice());
     }
-  },[dispatch, isAuthenticated, error, loading, email, message, navigateTo]);
+  }, [dispatch, error, message]);
 
   if(isAuthenticated){
     return <Navigate to={"/"}/>

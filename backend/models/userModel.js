@@ -27,7 +27,7 @@ const userschema = new mongoose.Schema(
     },
     accountVerified: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     borrowedBooks: [
@@ -55,11 +55,9 @@ const userschema = new mongoose.Schema(
 
     avatar: {
       public_id: String,
-    url: String,
+      url: String,
     },
 
-    verificationCode: Number,
-    verificationCodeExpires: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
   },
@@ -67,20 +65,6 @@ const userschema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-userschema.methods.generateVerificationCode = function () {
-  function generateRandomFiveDigitNumber() {
-    const firstDigit = Math.floor(1 + Math.random() * 9);
-    const remainingDigits = Math.floor(Math.random() * 10000)
-      .toString()
-      .padStart(4, "0");
-    return parseInt(firstDigit + remainingDigits);
-  }
-  const verificationCode = generateRandomFiveDigitNumber();
-  this.verificationCode = verificationCode;
-  this.verificationCodeExpires = Date.now() + 10 * 60 * 1000;
-  return verificationCode;
-};
 
 userschema.methods.generateToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {

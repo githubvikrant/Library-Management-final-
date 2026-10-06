@@ -2,40 +2,22 @@ import catchAsyncError from "../middlewares/catchAsyncError.js";
 import ErrorHandler from "../middlewares/errorMiddlewares.js";
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
-import { sendVerificationCode } from "../utils/sendVerificationCode.js";
 import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { generateForgotPasswordEmailTemplate } from "../utils/emailTemplate.js";
 import crypto from "crypto";
 import { v2 as cloudinary } from "cloudinary";
 
-
-
 export const Register = catchAsyncError(async (req, res, next) => {
-  
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
       return next(new ErrorHandler("Please enter all fields", 400));
     }
 
-    const isRegistered = await User.findOne({ email, accountVerified: true });
+    const isRegistered = await User.findOne({ email });
     if (isRegistered) {
-      return next(new ErrorHandler("User already registered", 400));
-    }
-
-    const registrationAttemptsByUser = await User.find({
-      email,
-      accountVerified: false,
-    });
-
-    if (registrationAttemptsByUser.length > 5) {
-      return next(
-        new ErrorHandler(
-          "you have exceeded the number of login attempts, try after some time",
-          400
-        )
-      );
+      return next(new ErrorHandler("User already registered with this email", 400));
     }
 
     if (password.length < 6) {
@@ -49,67 +31,12 @@ export const Register = catchAsyncError(async (req, res, next) => {
       name,
       email,
       password: hashedPassword,
+      accountVerified: true,
     });
 
-    const verificationCode = await user.generateVerificationCode();
-    await user.save({ validateBeforeSave: false });
-    sendVerificationCode(verificationCode, email, res);
+    sendToken(user, 201, "User registered successfully", res);
   } catch (error) {
     next(error);
-  }
-});
-
-export const verifyOTP = catchAsyncError(async (req, res, next) => {
-  const { email, otp } = req.body;
-
-  if (!email || !otp) {
-    return next(new ErrorHandler("email or otp missing", 400));
-  }
-
-  try {
-    const userAllEntries = await User.find({
-      email,
-      accountVerified: false,
-    }).sort({ createdAt: -1 });
-
-    if (!userAllEntries.length) {
-      return next(new ErrorHandler("User not found", 404));
-    }
-
-    let user;
-
-    if (userAllEntries.length > 1) {
-      user = userAllEntries[0];
-      await User.deleteMany({
-        _id: { $ne: user._id },
-        email,
-        accountVerified: false,
-      });
-    } else {
-      user = userAllEntries[0];
-    }
-
-    if (user.verificationCode !== Number(otp)) {
-      return next(new ErrorHandler("Invalid OTP", 400));
-    }
-    const currentTime = Date.now();
-
-    const verificationCodeExpires = new Date(
-      user.verificationCodeExpires
-    ).getTime();
-
-    if (currentTime > verificationCodeExpires) {
-      return next(new ErrorHandler("OTP expired", 400));
-    }
-
-    user.accountVerified = true;
-    user.verificationCode = null;
-    user.verificationCodeExpires = null;
-    await user.save({ validateBeforeSave: true });
-
-    sendToken(user, 200, "Account Verified!", res);
-  } catch (error) {
-    return next(new ErrorHandler("Internal server error.", 500));
   }
 });
 
@@ -118,7 +45,7 @@ export const login = catchAsyncError(async (req, res, next) => {
   if (!email || !password) {
     return next(new ErrorHandler("Please enter email and password", 400));
   }
-  const user = await User.findOne({ email, accountVerified: true }).select(
+  const user = await User.findOne({ email }).select(
     "+password"
   );
   if (!user) {
@@ -128,7 +55,7 @@ export const login = catchAsyncError(async (req, res, next) => {
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid email or password", 401));
   }
-  sendToken(user, 200, "user Login successful", res);
+  sendToken(user, 200, "User login successful", res);
 });
 
 export const logout = catchAsyncError(async (req, res, next) => {
@@ -155,12 +82,11 @@ export const getUser = catchAsyncError(async (req, res, next) => {
 export const forgotPassword = catchAsyncError(async (req, res, next) => {
   
   if(!req.body.email){
-    return next(new ErrorHandler("Email is requires !",400));
+    return next(new ErrorHandler("Email is required!", 400));
   }
   
   const user = await User.findOne({
     email: req.body.email,
-    accountVerified: true,
   });
 
   if (!user) {

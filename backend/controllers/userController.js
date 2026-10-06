@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 
 export const getAllUsers = catchAsyncError(async (req, res, next) => {
-  const users = await User.find({ accountVerified: true });
+  const users = await User.find();
   res.status(200).json({
     success: true,
     users,
@@ -22,10 +22,7 @@ export const registerNewAdmin = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Please fill all required fields.", 400));
   }
 
-  const isRegistered = await User.findOne({
-    email,
-    accountVerified: true,
-  });
+  const isRegistered = await User.findOne({ email });
   if (isRegistered) {
     return next(new ErrorHandler("User already exists", 400));
   }
